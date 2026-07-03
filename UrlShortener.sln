@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener.Infrastructure
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8CA69420-8500-4DA8-B459-2FCDCF69C04E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener.Domain.Tests", "tests\UrlShortener.Application.Tests\UrlShortener.Domain.Tests.csproj", "{33CD7BAB-B077-4A5F-8EFB-191D5BC6F57A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener.Domain.Tests", "tests\UrlShortener.Domain.Tests\UrlShortener.Domain.Tests.csproj", "{33CD7BAB-B077-4A5F-8EFB-191D5BC6F57A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1003,11 +1003,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/alijafari/Desktop/Repositories/UrlShortener/tests/UrlShortener.Application.Tests/UrlShortener.Domain.Tests.csproj",
+      "projectUniqueName": "/Users/alijafari/Desktop/Repositories/UrlShortener/tests/UrlShortener.Domain.Tests/UrlShortener.Domain.Tests.csproj",
       "projectName": "UrlShortener.Domain.Tests",
-      "projectPath": "/Users/alijafari/Desktop/Repositories/UrlShortener/tests/UrlShortener.Application.Tests/UrlShortener.Domain.Tests.csproj",
+      "projectPath": "/Users/alijafari/Desktop/Repositories/UrlShortener/tests/UrlShortener.Domain.Tests/UrlShortener.Domain.Tests.csproj",
       "packagesPath": "/Users/alijafari/.nuget/packages/",
-      "outputPath": "/Users/alijafari/Desktop/Repositories/UrlShortener/tests/UrlShortener.Application.Tests/obj/",
+      "outputPath": "/Users/alijafari/Desktop/Repositories/UrlShortener/tests/UrlShortener.Domain.Tests/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/alijafari/.nuget/NuGet/NuGet.Config"

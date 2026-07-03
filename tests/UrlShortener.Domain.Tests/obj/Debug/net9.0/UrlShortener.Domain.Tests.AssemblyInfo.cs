@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UrlShortener.Domain.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+34594824b618ec32804b9342b0e5dcd4fbae105e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ac88609cf0408f054296197d4669123d7c64ef6d")]
 [assembly: System.Reflection.AssemblyProductAttribute("UrlShortener.Domain.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UrlShortener.Domain.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
