@@ -1,0 +1,11 @@
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/bin/Debug/net9.0/UrlShortener.Domain.deps.json
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/bin/Debug/net9.0/UrlShortener.Domain.dll
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/bin/Debug/net9.0/UrlShortener.Domain.pdb
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/obj/Debug/net9.0/UrlShortener.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/obj/Debug/net9.0/UrlShortener.Domain.AssemblyInfoInputs.cache
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/obj/Debug/net9.0/UrlShortener.Domain.AssemblyInfo.cs
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/obj/Debug/net9.0/UrlShortener.Domain.csproj.CoreCompileInputs.cache
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/obj/Debug/net9.0/UrlShortener.Domain.dll
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/obj/Debug/net9.0/refint/UrlShortener.Domain.dll
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/obj/Debug/net9.0/UrlShortener.Domain.pdb
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/obj/Debug/net9.0/ref/UrlShortener.Domain.dll
