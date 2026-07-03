@@ -13,3 +13,4 @@
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Application/obj/Debug/net9.0/refint/UrlShortener.Application.dll
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Application/obj/Debug/net9.0/UrlShortener.Application.pdb
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Application/obj/Debug/net9.0/ref/UrlShortener.Application.dll
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Application/obj/Debug/net9.0/UrlShortener.Application.sourcelink.json

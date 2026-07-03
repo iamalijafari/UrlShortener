@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "5uKvpOScQLI=",
+  "dgSpecHash": "oaW7RYVpPMk=",
   "success": true,
   "projectFilePath": "/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Application/UrlShortener.Application.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/alijafari/.nuget/packages/fluentvalidation/12.1.1/fluentvalidation.12.1.1.nupkg.sha512",
+    "/Users/alijafari/.nuget/packages/mediatr/12.2.0/mediatr.12.2.0.nupkg.sha512",
+    "/Users/alijafari/.nuget/packages/mediatr.contracts/2.0.1/mediatr.contracts.2.0.1.nupkg.sha512",
+    "/Users/alijafari/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/9.0.8/microsoft.extensions.dependencyinjection.abstractions.9.0.8.nupkg.sha512"
+  ],
   "logs": []
 }

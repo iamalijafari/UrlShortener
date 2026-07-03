@@ -1,4 +1,5 @@
 using UrlShortener.Domain.Entities;
+using UrlShortener.Domain.ValueObjects;
 
 namespace UrlShortener.Domain.Repositories;
 
@@ -9,11 +10,11 @@ public interface IShortUrlRepository
         CancellationToken cancellationToken);
 
     Task<ShortUrl?> GetByCodeAsync(
-        string shortCode,
+        ShortCode shortCode,
         CancellationToken cancellationToken);
 
     Task<bool> ExistsByCodeAsync(
-        string shortCode,
+        ShortCode shortCode,
         CancellationToken cancellationToken);
 
     Task SaveChangesAsync(
