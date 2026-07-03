@@ -9,3 +9,4 @@
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/obj/Debug/net9.0/refint/UrlShortener.Domain.dll
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/obj/Debug/net9.0/UrlShortener.Domain.pdb
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/obj/Debug/net9.0/ref/UrlShortener.Domain.dll
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Domain/obj/Debug/net9.0/UrlShortener.Domain.sourcelink.json

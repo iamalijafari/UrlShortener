@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "3sHz+DvcuoU=",
+  "dgSpecHash": "Pcf/SK6wzTQ=",
   "success": true,
-  "projectFilePath": "/Users/alijafari/Desktop/Repositories/UrlShortener/tests/UrlShortener.Application.Tests/UrlShortener.Application.Tests.csproj",
+  "projectFilePath": "/Users/alijafari/Desktop/Repositories/UrlShortener/tests/UrlShortener.Application.Tests/UrlShortener.Domain.Tests.csproj",
   "expectedPackageFiles": [
     "/Users/alijafari/.nuget/packages/coverlet.collector/6.0.2/coverlet.collector.6.0.2.nupkg.sha512",
+    "/Users/alijafari/.nuget/packages/fluentassertions/8.10.0/fluentassertions.8.10.0.nupkg.sha512",
     "/Users/alijafari/.nuget/packages/microsoft.codecoverage/17.12.0/microsoft.codecoverage.17.12.0.nupkg.sha512",
     "/Users/alijafari/.nuget/packages/microsoft.net.test.sdk/17.12.0/microsoft.net.test.sdk.17.12.0.nupkg.sha512",
     "/Users/alijafari/.nuget/packages/microsoft.testplatform.objectmodel/17.12.0/microsoft.testplatform.objectmodel.17.12.0.nupkg.sha512",
