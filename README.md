@@ -337,7 +337,7 @@ This project is licensed under the MIT License.
 
 ## Author
 
-**Jafar**
+**Ali Jafari**
 
 Backend Developer
 
