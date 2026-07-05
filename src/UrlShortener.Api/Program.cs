@@ -3,6 +3,7 @@ using UrlShortener.Infrastructure;
 using UrlShortener.Api.Middleware;
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Infrastructure.Persistence;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,13 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var xml = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+
+    options.IncludeXmlComments(
+        Path.Combine(AppContext.BaseDirectory, xml));
+});
 
 builder.Services
     .AddHealthChecks()
