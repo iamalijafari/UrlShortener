@@ -1,77 +1,69 @@
 # URL Shortener API
 
-A production-ready URL Shortener API built with **ASP.NET Core**, **Clean Architecture**, **Domain-Driven Design (DDD)**, **CQRS**, and **PostgreSQL**.
+A production-ready URL Shortener API built with **ASP.NET Core 9**, following **Clean Architecture**, **Domain-Driven Design (DDD)**, and **CQRS** principles.
 
-The project demonstrates modern backend development practices including validation, domain modeling, testing, and layered architecture.
+This project demonstrates modern backend development practices including layered architecture, MediatR, FluentValidation, Entity Framework Core, PostgreSQL, Docker, Health Checks, and comprehensive testing.
 
 ---
 
 ## Features
 
 - Create shortened URLs
-- Redirect to the original URL
+- Redirect users using short URLs
 - Retrieve URL information by short code
 - Disable shortened URLs
 - URL expiration support
-- Domain-driven design
-- CQRS with MediatR
-- FluentValidation
+- Automatic database migrations
+- Health Checks
+- Swagger/OpenAPI documentation
 - Global exception handling
+- FluentValidation
 - Repository Pattern
-- Entity Framework Core
-- PostgreSQL
-- Comprehensive unit and integration tests
+- CQRS with MediatR
+- Docker & Docker Compose support
+- Unit and Integration Tests
 
 ---
 
 ## Tech Stack
 
-| Technology            | Description        |
-| --------------------- | ------------------ |
-| ASP.NET Core          | Web API            |
-| .NET                  | Backend Framework  |
-| Entity Framework Core | ORM                |
-| PostgreSQL            | Database           |
-| MediatR               | CQRS               |
-| FluentValidation      | Request Validation |
-| xUnit                 | Testing            |
-| Clean Architecture    | Project Structure  |
-| Domain-Driven Design  | Domain Modeling    |
+| Technology            | Purpose              |
+| --------------------- | -------------------- |
+| ASP.NET Core 9        | Web API              |
+| C#                    | Programming Language |
+| Entity Framework Core | ORM                  |
+| PostgreSQL            | Database             |
+| MediatR               | CQRS                 |
+| FluentValidation      | Request Validation   |
+| Swagger / OpenAPI     | API Documentation    |
+| Docker                | Containerization     |
+| xUnit                 | Testing              |
 
 ---
 
 # Architecture
 
-The solution follows **Clean Architecture** principles.
+The project follows **Clean Architecture** to keep business logic isolated from infrastructure and presentation concerns.
 
 ```
-Presentation
+src
 │
 ├── UrlShortener.Api
 │
-Application
+├── UrlShortener.Application
 │
-├── Commands
-├── Queries
-├── Behaviors
-├── Validators
+├── UrlShortener.Domain
 │
-Domain
-│
-├── Entities
-├── Value Objects
-├── Repositories
-│
-Infrastructure
-│
-├── EF Core
-├── PostgreSQL
-├── Repository Implementations
-│
-Tests
+└── UrlShortener.Infrastructure
+
+tests
+
+├── UrlShortener.Api.Tests
+
+└── UrlShortener.Domain.Tests
 ```
 
-Dependency Flow
+Dependency flow
 
 ```
 API
@@ -83,33 +75,11 @@ Domain
 Infrastructure
 ```
 
-The Domain layer has no dependency on any external framework.
+The Domain layer has no dependency on external frameworks.
 
 ---
 
-# Solution Structure
-
-```
-src/
-
-    UrlShortener.Api
-
-    UrlShortener.Application
-
-    UrlShortener.Domain
-
-    UrlShortener.Infrastructure
-
-tests/
-
-    UrlShortener.Api.Tests
-
-    UrlShortener.Domain.Tests
-```
-
----
-
-# Implemented Use Cases
+# Implemented Features
 
 ### Create Short URL
 
@@ -119,48 +89,39 @@ Creates a new shortened URL.
 POST /api/shorturls
 ```
 
-Example Request
+Example
 
 ```json
 {
-  "url": "https://www.google.com"
-}
-```
-
-Example Response
-
-```json
-{
-  "shortCode": "Ab12Cd",
-  "shortUrl": "http://localhost:5000/Ab12Cd"
+  "originalUrl": "https://github.com"
 }
 ```
 
 ---
 
-### Get URL By Code
+### Get Short URL
+
+Returns information about an existing short URL.
 
 ```
 GET /api/shorturls/{code}
 ```
 
-Returns information about a shortened URL.
-
 ---
 
 ### Redirect
+
+Redirects to the original URL.
 
 ```
 GET /{code}
 ```
 
-Redirects the client to the original URL.
-
 ---
 
-### Disable URL
+### Disable Short URL
 
-Disables an existing shortened URL.
+Disables an existing short URL.
 
 ---
 
@@ -170,36 +131,31 @@ Expired URLs cannot be redirected.
 
 ---
 
-# Domain Model
+### Health Check
 
-### Entity
+```
+GET /health
+```
 
-- ShortUrl
-
-### Value Objects
-
-- OriginalUrl
-- ShortCode
+Checks the health of the API and PostgreSQL database.
 
 ---
 
 # Validation
 
-Input validation is handled using **FluentValidation**.
+Validation is implemented using **FluentValidation** and MediatR pipeline behaviors.
 
-Examples include:
+Examples:
 
-- Invalid URL format
+- Invalid URL
 - Empty URL
 - Invalid short code
-
-Validation is executed automatically through MediatR pipeline behaviors.
 
 ---
 
 # Exception Handling
 
-The API includes centralized exception handling middleware.
+Centralized exception handling middleware returns consistent API responses.
 
 Handled exceptions include:
 
@@ -209,53 +165,57 @@ Handled exceptions include:
 
 ---
 
-# Testing
+# Swagger Documentation
 
-The solution contains both unit and integration tests.
+Swagger/OpenAPI is included with XML documentation.
 
-### Domain Tests
-
-- Entity behavior
-- Value Objects
-
-### Application Tests
-
-- Create URL
-- Redirect
-- Disable URL
-- Expiration
-- Validation
-- Not Found
-
-### Contract Tests
-
-API contract verification.
-
-Run all tests
+Available when running locally:
 
 ```
-dotnet test
+/swagger
 ```
+
+API endpoints include:
+
+- XML documentation
+- Request descriptions
+- Response descriptions
+- HTTP status codes
 
 ---
 
-# Getting Started
+# Docker Support
 
-## Clone
-
-```
-git clone https://github.com/yourusername/url-shortener.git
-```
+Run the complete application using Docker.
 
 ```
-cd url-shortener
+docker compose up --build
 ```
+
+This starts:
+
+- ASP.NET Core API
+- PostgreSQL
+
+Automatic EF Core migrations are applied on startup.
 
 ---
 
-## Configure Database
+# Running Locally
 
-Update the PostgreSQL connection string inside
+Clone the repository
+
+```bash
+git clone https://github.com/iamalijafari/urlshortener.git
+```
+
+Navigate to the project
+
+```bash
+cd urlshortener
+```
+
+Update the connection string inside
 
 ```
 appsettings.json
@@ -265,51 +225,79 @@ Example
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Host=localhost;Port=5432;Database=UrlShortener;Username=postgres;Password=postgres"
+  "DefaultConnection": "Host=localhost;Port=5433;Database=UrlShortener;Username=postgres;Password=postgres"
 }
 ```
 
----
+Apply migrations
 
-## Apply Migrations
-
-```
+```bash
 dotnet ef database update
 ```
 
----
+Run the application
 
-## Run
-
-```
+```bash
 dotnet run --project src/UrlShortener.Api
 ```
 
 ---
 
+# Running with Docker
+
+```bash
+docker compose up --build
+```
+
+Swagger
+
+```
+http://localhost:8080/swagger
+```
+
+Health Check
+
+```
+http://localhost:8080/health
+```
+
+---
+
+# Testing
+
+Run all tests
+
+```bash
+dotnet test
+```
+
+The solution contains:
+
+- Domain Tests
+- Application Tests
+- Integration Tests
+- Validation Tests
+- Redirect Tests
+- Expiration Tests
+- Disable Tests
+
+---
+
 # Project Highlights
 
-✔ Clean Architecture
-
-✔ Domain-Driven Design
-
-✔ CQRS Pattern
-
-✔ MediatR Pipeline Behaviors
-
-✔ Repository Pattern
-
-✔ Value Objects
-
-✔ EF Core
-
-✔ PostgreSQL
-
-✔ FluentValidation
-
-✔ Integration Testing
-
-✔ Unit Testing
+- Clean Architecture
+- Domain-Driven Design (DDD)
+- CQRS with MediatR
+- Entity Framework Core
+- PostgreSQL
+- FluentValidation
+- Repository Pattern
+- Health Checks
+- Docker Support
+- Swagger Documentation
+- Automatic Database Migration
+- Global Exception Handling
+- Unit & Integration Testing
 
 ---
 
@@ -317,15 +305,14 @@ dotnet run --project src/UrlShortener.Api
 
 - JWT Authentication
 - User Management
-- Custom Short Codes
 - Click Analytics
+- Custom Short URLs
+- QR Code Generation
 - Redis Cache
 - API Versioning
-- Docker Support
-- GitHub Actions CI
+- GitHub Actions (CI/CD)
 - Rate Limiting
 - OpenTelemetry
-- QR Code Generation
 
 ---
 
@@ -335,7 +322,7 @@ This project is licensed under the MIT License.
 
 ---
 
-## Author
+# Author
 
 **Ali Jafari**
 
@@ -343,6 +330,7 @@ Backend Developer
 
 - ASP.NET Core
 - C#
+- .NET
 - PostgreSQL
 - Clean Architecture
 - Domain-Driven Design
