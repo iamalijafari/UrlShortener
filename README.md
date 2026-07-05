@@ -316,12 +316,6 @@ The solution contains:
 
 ---
 
-# License
-
-This project is licensed under the MIT License.
-
----
-
 # Author
 
 **Ali Jafari**
