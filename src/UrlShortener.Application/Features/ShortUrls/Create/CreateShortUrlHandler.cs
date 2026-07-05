@@ -39,10 +39,13 @@ public sealed class CreateShortUrlHandler
 
         } while (await _repository.ExistsByCodeAsync(shortCode, cancellationToken));
 
+        var now = _dateTimeProvider.UtcNow;
+
         var shortUrl = new ShortUrl(
             originalUrl,
             shortCode,
-            _dateTimeProvider.UtcNow);
+            now,
+            now.AddDays(5));
 
         await _repository.AddAsync(shortUrl, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);

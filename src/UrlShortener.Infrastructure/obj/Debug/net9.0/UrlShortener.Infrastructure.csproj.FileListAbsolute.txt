@@ -1,4 +1,5 @@
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/bin/Debug/net9.0/UrlShortener.Infrastructure.deps.json
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/bin/Debug/net9.0/UrlShortener.Infrastructure.runtimeconfig.json
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/bin/Debug/net9.0/UrlShortener.Infrastructure.dll
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/bin/Debug/net9.0/UrlShortener.Infrastructure.pdb
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/bin/Debug/net9.0/UrlShortener.Application.dll
@@ -10,11 +11,10 @@
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/obj/Debug/net9.0/UrlShortener.Infrastructure.AssemblyInfoInputs.cache
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/obj/Debug/net9.0/UrlShortener.Infrastructure.AssemblyInfo.cs
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/obj/Debug/net9.0/UrlShortener.Infrastructure.csproj.CoreCompileInputs.cache
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/obj/Debug/net9.0/UrlShortener.Infrastructure.sourcelink.json
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/obj/Debug/net9.0/UrlShort.41F6DB00.Up2Date
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/obj/Debug/net9.0/UrlShortener.Infrastructure.dll
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/obj/Debug/net9.0/refint/UrlShortener.Infrastructure.dll
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/obj/Debug/net9.0/UrlShortener.Infrastructure.pdb
-/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/obj/Debug/net9.0/ref/UrlShortener.Infrastructure.dll
-/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/obj/Debug/net9.0/UrlShortener.Infrastructure.sourcelink.json
-/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/bin/Debug/net9.0/UrlShortener.Infrastructure.runtimeconfig.json
 /Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/obj/Debug/net9.0/UrlShortener.Infrastructure.genruntimeconfig.cache
+/Users/alijafari/Desktop/Repositories/UrlShortener/src/UrlShortener.Infrastructure/obj/Debug/net9.0/ref/UrlShortener.Infrastructure.dll

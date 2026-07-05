@@ -53,11 +53,19 @@
               "target": "Package",
               "version": "[12.1.1, )"
             },
+            "FluentValidation.DependencyInjectionExtensions": {
+              "target": "Package",
+              "version": "[12.1.1, )"
+            },
             "MediatR": {
               "target": "Package",
               "version": "[12.2.0, )"
             },
             "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.8, )"
+            },
+            "Microsoft.Extensions.Logging": {
               "target": "Package",
               "version": "[9.0.8, )"
             }

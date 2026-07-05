@@ -1,5 +1,7 @@
+using MediatR;
+
 namespace UrlShortener.Application.Features.ShortUrls.GetByCode;
 
-public class GetShortUrlByCodeQuery
-{
-}
+public sealed record GetShortUrlByCodeQuery(
+    string ShortCode
+) : IRequest<GetShortUrlByCodeResponse>;

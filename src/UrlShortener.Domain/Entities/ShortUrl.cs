@@ -12,11 +12,12 @@ public sealed class ShortUrl : BaseEntity
     public ShortUrl(
         OriginalUrl originalUrl,
         ShortCode shortCode,
+        DateTime createdAt,
         DateTime? expiresAt = null)
     {
         OriginalUrl = originalUrl;
         ShortCode = shortCode;
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = createdAt;
         ExpiresAt = expiresAt;
         ClickCount = 0;
         IsActive = true;
@@ -29,20 +30,20 @@ public sealed class ShortUrl : BaseEntity
     public int ClickCount { get; private set; }
     public bool IsActive { get; private set; }
 
-    public bool IsExpired()
+    public bool IsExpired(DateTime utcNow)
     {
         return ExpiresAt.HasValue &&
-               ExpiresAt.Value <= DateTime.UtcNow;
+            ExpiresAt.Value <= utcNow;
     }
 
-    public bool CanRedirect()
+    public bool CanRedirect(DateTime utcNow)
     {
-        return IsActive && !IsExpired();
+        return IsActive && !IsExpired(utcNow);
     }
 
-    public void RegisterClick()
+    public void RegisterClick(DateTime utcNow)
     {
-        if (!CanRedirect())
+        if (!CanRedirect(utcNow))
             throw new DomainException("Short URL cannot be used.");
 
         ClickCount++;

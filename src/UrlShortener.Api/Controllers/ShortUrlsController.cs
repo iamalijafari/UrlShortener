@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Application.Features.ShortUrls.Create;
-using UrlShortener.Application.Features.ShortUrls.Redirect;
+using UrlShortener.Application.Features.ShortUrls.GetByCode;
 
 namespace UrlShortener.Api.Controllers;
 
@@ -20,19 +20,22 @@ public class ShortUrlsController : ControllerBase
     public async Task<IActionResult> Create(CreateShortUrlCommand command)
     {
         var result = await _mediator.Send(command);
-        return Ok(result);
+
+        return CreatedAtAction(
+            nameof(GetByCode),
+            new { code = result.ShortCode },
+            result);
     }
 
-    [HttpGet("{code}")]
-    public async Task<IActionResult> Redirect(
-    string code,
-    CancellationToken cancellationToken)
+    [HttpGet("/api/shorturls/{code}")]
+    public async Task<ActionResult<GetShortUrlByCodeResponse>> GetByCode(
+        string code,
+        CancellationToken cancellationToken)
     {
-        var result = await _mediator.Send(new RedirectShortUrlCommand(code), cancellationToken);
+        var result = await _mediator.Send(
+            new GetShortUrlByCodeQuery(code),
+            cancellationToken);
 
-        if (!result.IsSuccess)
-            return NotFound(result.Error);
-
-        return Redirect(result.Value!);
+        return Ok(result);
     }
 }

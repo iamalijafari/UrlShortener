@@ -1,0 +1,102 @@
+## ===============================
+## Build outputs
+## ===============================
+bin/
+obj/
+out/
+publish/
+
+## ===============================
+## User-specific files
+## ===============================
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## ===============================
+## IDE - Visual Studio
+## ===============================
+.vs/
+*.VC.db
+*.VC.opendb
+
+## ===============================
+## Rider / JetBrains
+## ===============================
+.idea/
+*.sln.iml
+
+## ===============================
+## VS Code
+## ===============================
+.vscode/
+
+## ===============================
+## .NET / NuGet
+## ===============================
+*.log
+*.nupkg
+*.snupkg
+project.lock.json
+project.assets.json
+packages/
+*.nuget.props
+*.nuget.targets
+
+# NuGet cache
+**/packages/*
+
+## ===============================
+## Test results
+## ===============================
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+## ===============================
+## ASP.NET Core
+## ===============================
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+
+## ===============================
+## Logs
+## ===============================
+*.log
+logs/
+
+## ===============================
+## OS files
+## ===============================
+.DS_Store
+Thumbs.db
+
+## ===============================
+## Docker
+## ===============================
+docker-compose.override.yml
+.env
+.env.*
+
+## ===============================
+## Temporary files
+## ===============================
+*.tmp
+*.temp
+
+## ===============================
+## Coverage reports
+## ===============================
+coverage/
+coverage.*
+
+## ===============================
+## Node
+## ===============================
+node_modules/
+.next/
+dist/
+build/
