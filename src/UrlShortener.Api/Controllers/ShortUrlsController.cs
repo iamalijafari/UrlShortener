@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Application.Features.ShortUrls.Create;
+using UrlShortener.Application.Features.ShortUrls.Disable;
 using UrlShortener.Application.Features.ShortUrls.GetByCode;
 
 namespace UrlShortener.Api.Controllers;
@@ -66,9 +67,32 @@ public class ShortUrlsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(
-            new GetShortUrlByCodeQuery(code),
+            new GetShortUrlByCodeCommand(code),
             cancellationToken);
 
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Disable a shortened URL.
+    /// </summary>
+    /// <param name="code">The unique short code.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>No content.</returns>
+    /// <response code="204">The shortened URL was disabled.</response>
+    /// <response code="404">The specified short code was not found.</response>
+    [HttpPut("{code}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DisableByCode(
+        string code,
+        CancellationToken cancellationToken)
+    {
+        await _mediator.Send(
+            new DisableShortUrlCommand(code),
+            cancellationToken);
+
+        return NoContent();
     }
 }

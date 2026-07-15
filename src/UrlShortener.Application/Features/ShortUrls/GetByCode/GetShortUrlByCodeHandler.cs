@@ -6,7 +6,7 @@ using UrlShortener.Domain.ValueObjects;
 namespace UrlShortener.Application.Features.ShortUrls.GetByCode;
 
 public sealed class GetShortUrlByCodeHandler
-    : IRequestHandler<GetShortUrlByCodeQuery, GetShortUrlByCodeResponse>
+    : IRequestHandler<GetShortUrlByCodeCommand, GetShortUrlByCodeResponse>
 {
     private readonly IShortUrlRepository _repository;
 
@@ -16,7 +16,7 @@ public sealed class GetShortUrlByCodeHandler
     }
 
     public async Task<GetShortUrlByCodeResponse> Handle(
-        GetShortUrlByCodeQuery request,
+        GetShortUrlByCodeCommand request,
         CancellationToken cancellationToken)
     {
         var shortCode = ShortCode.Create(request.ShortCode);

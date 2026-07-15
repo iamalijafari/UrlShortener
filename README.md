@@ -15,7 +15,7 @@ This project demonstrates modern backend development practices including layered
 - URL expiration support
 - Automatic database migrations
 - Health Checks
-- Swagger/OpenAPI documentation
+- Swagger documentation
 - Global exception handling
 - FluentValidation
 - Repository Pattern
@@ -128,6 +128,7 @@ Disables an existing short URL.
 ### URL Expiration
 
 Expired URLs cannot be redirected.
+Shortened URLs expire after 5 days by default.
 
 ---
 
@@ -167,7 +168,7 @@ Handled exceptions include:
 
 # Swagger Documentation
 
-Swagger/OpenAPI is included with XML documentation.
+Swagger is included with XML documentation.
 
 Available when running locally:
 
