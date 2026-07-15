@@ -81,7 +81,7 @@ public class ShortUrlsController : ControllerBase
     /// <returns>No content.</returns>
     /// <response code="204">The shortened URL was disabled.</response>
     /// <response code="404">The specified short code was not found.</response>
-    [HttpPut("{code}")]
+    [HttpPatch("{code}/disable")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
