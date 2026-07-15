@@ -23,8 +23,8 @@ public sealed class ShortUrl : BaseEntity
         IsActive = true;
     }
 
-    public OriginalUrl OriginalUrl { get; private set; }
-    public ShortCode ShortCode { get; private set; }
+    public OriginalUrl OriginalUrl { get; private set; } = null!;
+    public ShortCode ShortCode { get; private set; } = null!;
     public DateTime CreatedAt { get; private set; }
     public DateTime? ExpiresAt { get; private set; }
     public int ClickCount { get; private set; }
