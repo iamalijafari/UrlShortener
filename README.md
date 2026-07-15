@@ -57,9 +57,8 @@ src
 └── UrlShortener.Infrastructure
 
 tests
-
+│
 ├── UrlShortener.Api.Tests
-
 └── UrlShortener.Domain.Tests
 ```
 
@@ -122,6 +121,10 @@ GET /{code}
 ### Disable Short URL
 
 Disables an existing short URL.
+
+```
+PATCH /api/shorturls/{code}/disable
+```
 
 ---
 
