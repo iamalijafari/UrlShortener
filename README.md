@@ -1,5 +1,12 @@
 # URL Shortener API
 
+[![Build](https://github.com/iamalijafari/UrlShortener/actions/workflows/ci.yml/badge.svg)](https://github.com/iamalijafari/UrlShortener/actions/workflows/ci.yml)
+![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?logo=docker&logoColor=white)
+![Swagger](https://img.shields.io/badge/OpenAPI-Swagger-85EA2D?logo=swagger)
+![License](https://img.shields.io/github/license/iamalijafari/UrlShortener)
+
 A production-ready URL Shortener API built with **ASP.NET Core 9**, following **Clean Architecture**, **Domain-Driven Design (DDD)**, and **CQRS** principles.
 
 This project demonstrates modern backend development practices including layered architecture, MediatR, FluentValidation, Entity Framework Core, PostgreSQL, Docker, Health Checks, and comprehensive testing.
