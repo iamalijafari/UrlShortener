@@ -80,6 +80,13 @@ public sealed class RedirectShortUrlTests
         cached.HasValue.Should().BeTrue();
     }
 
+    [Fact]
+    public void Redis_Cache_Keys_Should_Preserve_Base62_Casing()
+    {
+        RedisRedirectCache.Key("AbC123")
+            .Should().NotBe(RedisRedirectCache.Key("abc123"));
+    }
+
     private async Task ProcessOutboxEventsAsync(string shortCode)
     {
         await using var scope = _factory.Services.CreateAsyncScope();

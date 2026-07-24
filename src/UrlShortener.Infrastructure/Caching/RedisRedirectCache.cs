@@ -104,5 +104,5 @@ public sealed class RedisRedirectCache : IRedirectCache
     }
 
     public static string Key(string shortCode) =>
-        $"{KeyPrefix}{shortCode.ToLowerInvariant()}";
+        $"{KeyPrefix}{shortCode}";
 }
