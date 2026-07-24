@@ -6,7 +6,8 @@ using UrlShortener.Application.Features.ShortUrls.Create;
 
 namespace UrlShortener.Api.Tests.Expiration;
 
-public sealed class ExpirationTests : IClassFixture<CustomWebApplicationFactory>
+[Collection(IntegrationTestCollection.Name)]
+public sealed class ExpirationTests
 {
     private readonly HttpClient _client;
 
@@ -23,10 +24,11 @@ public sealed class ExpirationTests : IClassFixture<CustomWebApplicationFactory>
             new
             {
                 originalUrl = "https://google.com",
-                expiresAt = DateTime.UtcNow.AddSeconds(-10)
+                expiresAt = DateTime.UtcNow.AddSeconds(1)
             });
 
         var created = await create.Content.ReadFromJsonAsync<CreateShortUrlResponse>();
+        await Task.Delay(TimeSpan.FromSeconds(2));
 
         var response = await _client.GetAsync($"/{created!.ShortCode}");
 

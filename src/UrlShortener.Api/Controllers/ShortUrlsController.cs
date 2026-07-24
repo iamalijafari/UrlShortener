@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Application.Features.ShortUrls.Create;
 using UrlShortener.Application.Features.ShortUrls.Disable;
 using UrlShortener.Application.Features.ShortUrls.GetByCode;
+using UrlShortener.Application.Features.Analytics.GetUrlAnalytics;
 
 namespace UrlShortener.Api.Controllers;
 
@@ -43,11 +44,15 @@ public class ShortUrlsController : ControllerBase
     public async Task<IActionResult> Create(CreateShortUrlCommand command)
     {
         var result = await _mediator.Send(command);
+        var response = result with
+        {
+            ShortUrl = $"{Request.Scheme}://{Request.Host}/{result.ShortCode}"
+        };
 
         return CreatedAtAction(
             nameof(GetByCode),
             new { code = result.ShortCode },
-            result);
+            response);
     }
 
     /// <summary>
@@ -94,5 +99,33 @@ public class ShortUrlsController : ControllerBase
             cancellationToken);
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// Retrieves daily click analytics for a shortened URL.
+    /// </summary>
+    /// <param name="code">The unique short code.</param>
+    /// <param name="from">The optional inclusive start date.</param>
+    /// <param name="to">The optional inclusive end date.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Daily click counts and the total for the selected range.</returns>
+    /// <response code="200">Analytics were returned successfully.</response>
+    /// <response code="400">The requested date range is invalid.</response>
+    /// <response code="404">The specified short code was not found.</response>
+    [HttpGet("{code}/analytics")]
+    [ProducesResponseType(typeof(GetUrlAnalyticsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetUrlAnalyticsResponse>> GetAnalytics(
+        string code,
+        [FromQuery] DateOnly? from,
+        [FromQuery] DateOnly? to,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(
+            new GetUrlAnalyticsQuery(code, from, to),
+            cancellationToken);
+
+        return Ok(result);
     }
 }

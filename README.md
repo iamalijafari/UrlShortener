@@ -1,310 +1,214 @@
-# URL Shortener API
+# URL Shortener V2
 
 [![Build](https://github.com/iamalijafari/UrlShortener/actions/workflows/ci.yml/badge.svg)](https://github.com/iamalijafari/UrlShortener/actions/workflows/ci.yml)
 ![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?logo=docker&logoColor=white)
-![Swagger](https://img.shields.io/badge/OpenAPI-Swagger-85EA2D?logo=swagger)
+![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white)
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-4-FF6600?logo=rabbitmq&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker_Compose-Enabled-2496ED?logo=docker&logoColor=white)
 ![License](https://img.shields.io/github/license/iamalijafari/UrlShortener)
 
 <p align="center">
-    <img src="assets/architecture-banner.png" alt="Architecture Banner" width="1000"/>
+    <img src="assets/architecture-banner.png" alt="URL Shortener architecture banner" width="1000"/>
 </p>
 
-A production-ready URL Shortener API built with **ASP.NET Core 9** using **Clean Architecture**, **Domain-Driven Design (DDD)**, and **CQRS**. Designed with **maintainability**, **scalability**, and **testability** in mind.
+A production-inspired URL shortener built with ASP.NET Core 9, Clean
+Architecture, CQRS, PostgreSQL, Redis, RabbitMQ, and an asynchronous analytics
+worker.
 
-This project demonstrates modern backend engineering practices including layered architecture, MediatR, FluentValidation, Entity Framework Core, PostgreSQL, Docker, Health Checks, centralized exception handling, and comprehensive testing.
+V2 focuses on the failure modes that matter in distributed backend systems:
+cache invalidation, reliable event publication, duplicate delivery, eventual
+consistency, observability, and containerized integration testing.
 
----
+## Features
 
-# Features
+### Product capabilities
 
-## Functional Features
+- Create, retrieve, disable, and expire short URLs
+- Redirect through a Redis-backed cache-aside lookup path
+- Record visits asynchronously without delaying redirects
+- Query total clicks and a zero-filled daily analytics series
+- Select analytics ranges of up to 366 days
 
-- Create shortened URLs
-- Redirect users using short URLs
-- Retrieve URL information
-- Disable shortened URLs
-- URL expiration support
+### Engineering capabilities
 
-## Technical Features
+- Clean Architecture, DDD, CQRS, MediatR, and FluentValidation
+- Transactional outbox for reliable `UrlVisited` events
+- RabbitMQ publisher confirms and durable messages
+- Idempotent consumer backed by PostgreSQL
+- PostgreSQL daily analytics aggregation
+- Structured JSON logging with Serilog
+- OpenTelemetry traces exported through OTLP
+- Dependency-aware readiness and liveness checks
+- Real PostgreSQL, Redis, and RabbitMQ Testcontainers
+- Docker Compose development environment
+- Azure Container Apps Bicep and an OIDC deployment workflow
 
-- Clean Architecture
-- Domain-Driven Design (DDD)
-- CQRS with MediatR
-- FluentValidation
-- Repository Pattern
-- Global Exception Handling
-- Health Checks
-- Docker Support
-- Automatic Database Migration
-- Unit & Integration Testing
+## Architecture
 
----
-
-# Architecture
-
-<p align="center">
-    <img src="assets/architecture-diagram.png" alt="Architecture Diagram" width="1000"/>
-</p>
-
-The solution follows **Clean Architecture** to separate business logic from infrastructure and presentation concerns while maintaining a highly testable and extensible codebase.
-
-```
-src
-│
-├── UrlShortener.Api
-├── UrlShortener.Application
-├── UrlShortener.Domain
-└── UrlShortener.Infrastructure
-
-tests
-│
-├── UrlShortener.Api.Tests
-└── UrlShortener.Domain.Tests
+```mermaid
+flowchart TD
+    Client[Client] --> API[URL Shortener API]
+    API --> Redis[(Redis)]
+    API --> Postgres[(PostgreSQL)]
+    Postgres --> Outbox[Outbox publisher]
+    Outbox --> Rabbit[(RabbitMQ)]
+    Rabbit --> Consumer[Analytics consumer]
+    Consumer --> Postgres
 ```
 
-Dependency Flow
+### Redirect and analytics flow
 
-```
-Presentation (API)
-        │
-        ▼
-Application
-        │
-        ▼
-Domain
-        ▲
-        │
-Infrastructure
-```
+1. The API checks Redis for the redirect target.
+2. On a miss, it reads PostgreSQL, validates active/expiration rules, and fills
+   the cache with an expiration-aware TTL.
+3. The redirect and its `UrlVisited` outbox record are completed in one
+   PostgreSQL unit of work.
+4. The analytics worker locks unpublished outbox rows with
+   `FOR UPDATE SKIP LOCKED`, publishes durable RabbitMQ messages, and marks them
+   as published only after publisher confirmation.
+5. The RabbitMQ consumer inserts the event ID into `processed_events` with
+   `ON CONFLICT DO NOTHING`.
+6. Only the first delivery updates the URL click total and the daily analytics
+   bucket. Redeliveries are acknowledged without double-counting.
 
-The **Domain** layer has **zero dependency** on frameworks or external libraries.
+Click statistics are intentionally eventually consistent. The redirect path
+does not wait for RabbitMQ or analytics processing.
 
----
+## Solution structure
 
-# Project Structure
+| Project | Responsibility |
+| --- | --- |
+| `UrlShortener.Api` | HTTP API, middleware, health endpoints, composition |
+| `UrlShortener.Application` | CQRS use cases, validation, contracts |
+| `UrlShortener.Domain` | Entities, value objects, business rules |
+| `UrlShortener.Infrastructure` | EF Core, PostgreSQL, Redis, RabbitMQ |
+| `UrlShortener.Analytics.Worker` | Outbox publisher and idempotent consumer |
+| `UrlShortener.Api.Tests` | Containerized integration and contract tests |
+| `UrlShortener.Domain.Tests` | Domain and value-object unit tests |
 
-| Project                     | Responsibility                                  |
-| --------------------------- | ----------------------------------------------- |
-| UrlShortener.Api            | API endpoints, middleware, dependency injection |
-| UrlShortener.Application    | Use cases, CQRS handlers, validation            |
-| UrlShortener.Domain         | Business rules, entities, domain abstractions   |
-| UrlShortener.Infrastructure | Entity Framework Core, PostgreSQL, repositories |
+## API
 
----
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/shorturls` | Create a short URL |
+| `GET` | `/api/shorturls/{code}` | Get URL details and current click total |
+| `PATCH` | `/api/shorturls/{code}/disable` | Disable a short URL and evict its cache entry |
+| `GET` | `/api/shorturls/{code}/analytics` | Get daily analytics |
+| `GET` | `/{code}` | Redirect and enqueue a visit |
+| `GET` | `/health/live` | Process liveness |
+| `GET` | `/health/ready` | PostgreSQL, Redis, and RabbitMQ readiness |
 
-# Design Principles
+Example analytics query:
 
-- Clean Architecture
-- Domain-Driven Design (DDD)
-- CQRS
-- SOLID Principles
-- Dependency Injection
-- Separation of Concerns
-- Repository Pattern
-- Validation Pipeline
-- Testability
-- Scalability
-
----
-
-# Tech Stack
-
-| Technology            | Purpose              |
-| --------------------- | -------------------- |
-| ASP.NET Core 9        | Web API              |
-| C#                    | Programming Language |
-| Entity Framework Core | ORM                  |
-| PostgreSQL            | Database             |
-| MediatR               | CQRS                 |
-| FluentValidation      | Validation           |
-| Swagger / OpenAPI     | API Documentation    |
-| Docker                | Containerization     |
-| xUnit                 | Testing              |
-
----
-
-# API Endpoints
-
-| Method | Endpoint                        | Description              |
-| ------ | ------------------------------- | ------------------------ |
-| POST   | `/api/shorturls`                | Create a shortened URL   |
-| GET    | `/api/shorturls/{code}`         | Retrieve URL information |
-| GET    | `/{code}`                       | Redirect to original URL |
-| PATCH  | `/api/shorturls/{code}/disable` | Disable a shortened URL  |
-| GET    | `/health`                       | Health Check             |
-
----
-
-# Swagger UI
-
-<p align="center">
-    <img src="assets/swagger-ui.png" alt="Swagger UI"/>
-</p>
-
-Interactive API documentation is available via Swagger.
-
-```
-http://localhost:8080/swagger
+```http
+GET /api/shorturls/abc123/analytics?from=2026-07-01&to=2026-07-31
 ```
 
----
+## Run with Docker Compose
 
-# Validation
+Requirements:
 
-Validation is implemented using **FluentValidation** together with **MediatR Pipeline Behaviors**.
+- Docker Engine with Docker Compose
 
-Example validation scenarios:
-
-- Invalid URLs
-- Empty requests
-- Invalid short codes
-- Business rule validation
-
----
-
-# Exception Handling
-
-A centralized exception handling middleware provides consistent API responses.
-
-Handled exceptions include:
-
-- ValidationException
-- NotFoundException
-- DomainException
-- Unexpected Exceptions
-
----
-
-# Docker Support
-
-Run the complete application with Docker.
+Start the complete environment:
 
 ```bash
 docker compose up --build
 ```
 
-Services started:
+| Service | URL |
+| --- | --- |
+| Swagger UI | `http://localhost:8080/swagger` |
+| API readiness | `http://localhost:8080/health/ready` |
+| Worker readiness | `http://localhost:8081/health/ready` |
+| RabbitMQ management | `http://localhost:15672` |
+| Jaeger traces | `http://localhost:16686` |
+| PostgreSQL | `localhost:5433` |
+| Redis | `localhost:6379` |
 
-- ASP.NET Core API
-- PostgreSQL
+The local RabbitMQ username and password are both `urlshortener`.
 
-EF Core migrations are automatically applied on startup.
+Stop the services:
 
----
+```bash
+docker compose down
+```
 
-# Running Locally
+Remove the local data volumes:
 
-## Requirements
+```bash
+docker compose down --volumes
+```
+
+## Run locally
+
+Requirements:
 
 - .NET 9 SDK
 - PostgreSQL 17
+- Redis 7+
+- RabbitMQ 4+
 
-Clone repository
-
-```bash
-git clone https://github.com/iamalijafari/UrlShortener.git
-```
-
-Navigate
-
-```bash
-cd UrlShortener
-```
-
-Configure
-
-```json
-"ConnectionStrings": {
-  "DefaultConnection": "Host=localhost;Port=5433;Database=UrlShortener;Username=postgres;Password=postgres"
-}
-```
-
-Apply migrations
-
-```bash
-dotnet ef database update
-```
-
-Run
+Start the backing services, then run the API and worker in separate terminals:
 
 ```bash
 dotnet run --project src/UrlShortener.Api
+dotnet run --project src/UrlShortener.Analytics.Worker
 ```
 
----
+Configuration is available in each host's `appsettings.json` and can be
+overridden with environment variables.
 
-# Running with Docker
-
-```bash
-docker compose up --build
-```
-
-Swagger
-
-```
-http://localhost:8080/swagger
-```
-
-Health Check
-
-```
-http://localhost:8080/health
-```
-
----
-
-# Testing
-
-Run all tests
+## Tests
 
 ```bash
 dotnet test
 ```
 
-Included test suites:
+The integration suite starts real PostgreSQL, Redis, and RabbitMQ containers
+and verifies:
 
-- Domain Tests
-- Application Tests
-- Integration Tests
-- Validation Tests
-- Redirect Tests
-- Expiration Tests
-- Disable Tests
+- URL creation, validation, expiration, disable, and redirect contracts
+- Redis redirect caching
+- transactional outbox persistence
+- idempotent analytics processing
+- daily analytics responses
+- RabbitMQ event delivery
+- readiness checks against all three dependencies
 
----
+Docker must be running for the integration suite.
 
-# Future Improvements
+## Observability
 
-- JWT Authentication
-- Redis Cache
-- Rate Limiting
-- API Versioning
-- Click Analytics
-- Custom Short URLs
-- QR Code Generation
-- OpenTelemetry
-- CI/CD Pipeline
+Both hosts emit compact JSON logs. OpenTelemetry traces cover HTTP requests,
+redirect resolution, Redis operations, RabbitMQ publishing, and analytics
+processing.
 
----
+Docker Compose exports traces to Jaeger. In other environments, set:
 
-# Author
+```text
+OpenTelemetry__Endpoint=https://your-otlp-collector:4317
+```
 
-**Ali Jafari**
+Readiness checks include PostgreSQL, Redis, and RabbitMQ. Liveness checks only
+verify that the process is running so dependency outages do not cause restart
+loops.
 
-Senior Backend Engineer
+## Azure
 
-- ASP.NET Core
-- .NET
-- SQL Server
-- PostgreSQL
-- Docker
+The `deploy/azure` directory contains a Container Apps Bicep template, and
+`.github/workflows/deploy-azure.yml` contains a manual OIDC deployment
+workflow. It expects managed PostgreSQL, Redis, and RabbitMQ connection strings
+to be supplied as GitHub environment secrets.
 
----
+See [`deploy/azure/README.md`](deploy/azure/README.md) for the required Azure
+and GitHub configuration.
 
-# License
+Kubernetes and Helm are deliberately deferred until the API, outbox, broker,
+worker, and analytics behavior are stable in Docker Compose and Azure
+Container Apps.
 
-This project is licensed under the MIT License.
+## License
 
-See the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE).

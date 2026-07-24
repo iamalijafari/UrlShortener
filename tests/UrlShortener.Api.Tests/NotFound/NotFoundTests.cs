@@ -4,7 +4,8 @@ using UrlShortener.Api.Tests.Common;
 
 namespace UrlShortener.Api.Tests.NotFound;
 
-public sealed class NotFoundTests : IClassFixture<CustomWebApplicationFactory>
+[Collection(IntegrationTestCollection.Name)]
+public sealed class NotFoundTests
 {
     private readonly HttpClient _client;
 

@@ -11,6 +11,12 @@ public sealed class CreateShortUrlValidator
             .NotEmpty()
             .Must(BeAValidUrl)
             .WithMessage("Invalid URL format");
+
+        RuleFor(x => x.ExpiresAt)
+            .Must(expiresAt =>
+                !expiresAt.HasValue ||
+                expiresAt.Value > DateTime.UtcNow)
+            .WithMessage("Expiration must be in the future.");
     }
 
     private bool BeAValidUrl(string url)

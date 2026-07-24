@@ -1,46 +1,40 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using UrlShortener.Infrastructure.Persistence;
 
 namespace UrlShortener.Api.Tests.Common;
 
 public sealed class CustomWebApplicationFactory
     : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly PostgreSqlFixture _database = new();
+    private readonly InfrastructureFixture _infrastructure = new();
+
+    public string RedisConnectionString =>
+        _infrastructure.RedisConnectionString;
+
+    public string RabbitMqConnectionString =>
+        _infrastructure.RabbitMqConnectionString;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureServices(services =>
-        {
-            services.RemoveAll(typeof(DbContextOptions<AppDbContext>));
-
-            services.AddDbContext<AppDbContext>(options =>
-            {
-                options.UseNpgsql(_database.ConnectionString);
-            });
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            using var scope = serviceProvider.CreateScope();
-
-            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-            dbContext.Database.Migrate();
-        });
+        builder.UseEnvironment("Development");
+        builder.UseSetting(
+            "ConnectionStrings:DefaultConnection",
+            _infrastructure.PostgreSqlConnectionString);
+        builder.UseSetting(
+            "Redis:ConnectionString",
+            _infrastructure.RedisConnectionString);
+        builder.UseSetting(
+            "RabbitMq:ConnectionString",
+            _infrastructure.RabbitMqConnectionString);
+        builder.UseSetting("OpenTelemetry:Endpoint", string.Empty);
     }
 
-    public async Task InitializeAsync()
-    {
-        await _database.InitializeAsync();
-    }
+    public Task InitializeAsync() => _infrastructure.InitializeAsync();
 
     public new async Task DisposeAsync()
     {
-        await _database.DisposeAsync();
+        await base.DisposeAsync();
+        await _infrastructure.DisposeAsync();
     }
 
     public HttpClient CreateNoRedirectClient()

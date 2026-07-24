@@ -1,46 +1,113 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:17
-    container_name: urlshortener-postgres
-    restart: always
-
+    restart: unless-stopped
     environment:
       POSTGRES_DB: UrlShortener
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-
     ports:
-      - "5432:5432"
-
+      - "5433:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d UrlShortener"]      
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U postgres -d UrlShortener"]
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: urlshortener
+      RABBITMQ_DEFAULT_PASS: urlshortener
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    restart: unless-stopped
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"
+      - "4317:4317"
 
   api:
     build:
       context: .
       dockerfile: src/UrlShortener.Api/Dockerfile
-
-    container_name: urlshortener-api
-
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
-
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     ports:
       - "8080:8080"
-
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=UrlShortener;Username=postgres;Password=postgres
+      Redis__ConnectionString: redis:6379,abortConnect=false
+      RabbitMq__ConnectionString: amqp://urlshortener:urlshortener@rabbitmq:5672/
+      OpenTelemetry__Endpoint: http://jaeger:4317
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  analytics-worker:
+    build:
+      context: .
+      dockerfile: src/UrlShortener.Analytics.Worker/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8081:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=UrlShortener;Username=postgres;Password=postgres
+      Redis__ConnectionString: redis:6379,abortConnect=false
+      RabbitMq__ConnectionString: amqp://urlshortener:urlshortener@rabbitmq:5672/
+      OpenTelemetry__Endpoint: http://jaeger:4317
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
 
 volumes:
   postgres-data:
+  redis-data:
+  rabbitmq-data:

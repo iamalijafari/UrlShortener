@@ -6,7 +6,8 @@ using UrlShortener.Application.Features.ShortUrls.GetByCode;
 
 namespace UrlShortener.Api.Tests.Contract;
 
-public sealed class ContractTests : IClassFixture<CustomWebApplicationFactory>
+[Collection(IntegrationTestCollection.Name)]
+public sealed class ContractTests
 {
     private readonly HttpClient _client;
 

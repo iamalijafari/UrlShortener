@@ -2,6 +2,7 @@ using MediatR;
 using UrlShortener.Application.Common.Exceptions;
 using UrlShortener.Domain.Repositories;
 using UrlShortener.Domain.ValueObjects;
+using UrlShortener.Application.Abstractions.Services;
 
 namespace UrlShortener.Application.Features.ShortUrls.Disable;
 
@@ -9,9 +10,14 @@ public sealed class DisableShortUrlHandler
     : IRequestHandler<DisableShortUrlCommand>
 {
     private readonly IShortUrlRepository _repository;
-    public DisableShortUrlHandler(IShortUrlRepository repository)
+    private readonly IRedirectCache _redirectCache;
+
+    public DisableShortUrlHandler(
+        IShortUrlRepository repository,
+        IRedirectCache redirectCache)
     {
         _repository = repository;
+        _redirectCache = redirectCache;
     }
 
     public async Task Handle(DisableShortUrlCommand request, CancellationToken cancellationToken)
@@ -30,5 +36,6 @@ public sealed class DisableShortUrlHandler
         shortUrl.Disable();
 
         await _repository.SaveChangesAsync(cancellationToken);
+        await _redirectCache.RemoveAsync(request.ShortCode, cancellationToken);
     }
 }

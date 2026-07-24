@@ -6,8 +6,8 @@ using UrlShortener.Api.Tests.Common;
 
 namespace UrlShortener.Api.Tests.Validation;
 
+[Collection(IntegrationTestCollection.Name)]
 public sealed class CreateShortUrlValidationTests
-    : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client;
 

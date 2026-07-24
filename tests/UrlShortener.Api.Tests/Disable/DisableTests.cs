@@ -6,7 +6,8 @@ using UrlShortener.Application.Features.ShortUrls.Create;
 
 namespace UrlShortener.Api.Tests.Disable;
 
-public sealed class DisableTests : IClassFixture<CustomWebApplicationFactory>
+[Collection(IntegrationTestCollection.Name)]
+public sealed class DisableTests
 {
     private readonly HttpClient _client;
 
@@ -24,7 +25,9 @@ public sealed class DisableTests : IClassFixture<CustomWebApplicationFactory>
 
         var created = await create.Content.ReadFromJsonAsync<CreateShortUrlResponse>();
 
-        await _client.PostAsync($"/api/shorturls/{created!.ShortCode}/disable", null);
+        await _client.PatchAsync(
+            $"/api/shorturls/{created!.ShortCode}/disable",
+            null);
 
         var response = await _client.GetAsync($"/{created.ShortCode}");
 
