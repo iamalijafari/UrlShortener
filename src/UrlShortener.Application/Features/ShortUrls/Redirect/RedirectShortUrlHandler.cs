@@ -16,18 +16,18 @@ public sealed class RedirectShortUrlHandler
     private readonly IShortUrlRepository _repository;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IRedirectCache _redirectCache;
-    private readonly IUrlVisitOutbox _outbox;
+    private readonly IUrlVisitRecorder _visitRecorder;
 
     public RedirectShortUrlHandler(
         IShortUrlRepository repository,
         IDateTimeProvider dateTimeProvider,
         IRedirectCache redirectCache,
-        IUrlVisitOutbox outbox)
+        IUrlVisitRecorder visitRecorder)
     {
         _repository = repository;
         _dateTimeProvider = dateTimeProvider;
         _redirectCache = redirectCache;
-        _outbox = outbox;
+        _visitRecorder = visitRecorder;
     }
 
     public async Task<Result<string>> Handle(
@@ -52,11 +52,17 @@ public sealed class RedirectShortUrlHandler
                 throw new NotFoundException("Short URL is expired.");
             }
 
-            await PersistVisitAsync(
+            var recorded = await PersistVisitAsync(
                 cached.ShortUrlId,
                 request.ShortCode,
                 now,
                 cancellationToken);
+
+            if (!recorded)
+            {
+                await _redirectCache.RemoveAsync(request.ShortCode, cancellationToken);
+                throw new NotFoundException("Short URL is unavailable.");
+            }
 
             return Result<string>.Success(cached.OriginalUrl);
         }
@@ -71,11 +77,16 @@ public sealed class RedirectShortUrlHandler
             throw new NotFoundException("Short URL is unavailable.");
         }
 
-        await PersistVisitAsync(
+        var visitRecorded = await PersistVisitAsync(
             entity.Id,
             entity.ShortCode.Value,
             now,
             cancellationToken);
+
+        if (!visitRecorded)
+        {
+            throw new NotFoundException("Short URL is unavailable.");
+        }
 
         await _redirectCache.SetAsync(
             entity.ShortCode.Value,
@@ -88,18 +99,18 @@ public sealed class RedirectShortUrlHandler
         return Result<string>.Success(entity.OriginalUrl.Value);
     }
 
-    private async Task PersistVisitAsync(
+    private Task<bool> PersistVisitAsync(
         Guid shortUrlId,
         string shortCode,
         DateTime visitedAtUtc,
         CancellationToken cancellationToken)
     {
-        _outbox.Add(new UrlVisitedIntegrationEvent(
-            Guid.NewGuid(),
-            shortUrlId,
-            shortCode,
-            visitedAtUtc));
-
-        await _repository.SaveChangesAsync(cancellationToken);
+        return _visitRecorder.RecordAsync(
+            new UrlVisitedIntegrationEvent(
+                Guid.NewGuid(),
+                shortUrlId,
+                shortCode,
+                visitedAtUtc),
+            cancellationToken);
     }
 }

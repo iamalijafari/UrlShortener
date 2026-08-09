@@ -26,7 +26,7 @@ public static class DependencyInjection
                 configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<IShortUrlRepository, ShortUrlRepository>();
-        services.AddScoped<IUrlVisitOutbox, UrlVisitOutbox>();
+        services.AddScoped<IUrlVisitRecorder, UrlVisitRecorder>();
         services.AddScoped<IUrlAnalyticsReader, UrlAnalyticsReader>();
         services.AddScoped<IUrlVisitedEventProcessor, UrlVisitedEventProcessor>();
 

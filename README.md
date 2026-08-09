@@ -62,18 +62,20 @@ flowchart TD
 1. The API checks Redis for the redirect target.
 2. On a miss, it reads PostgreSQL, validates active/expiration rules, and fills
    the cache with an expiration-aware TTL.
-3. The redirect and its `UrlVisited` outbox record are completed in one
-   PostgreSQL unit of work.
+3. The primary click counter is incremented and its `UrlVisited` outbox record
+   is written in one PostgreSQL transaction. `GET /api/shorturls/{code}`
+   therefore exposes the new count immediately.
 4. The analytics worker locks unpublished outbox rows with
    `FOR UPDATE SKIP LOCKED`, publishes durable RabbitMQ messages, and marks them
    as published only after publisher confirmation.
 5. The RabbitMQ consumer inserts the event ID into `processed_events` with
    `ON CONFLICT DO NOTHING`.
-6. Only the first delivery updates the URL click total and the daily analytics
-   bucket. Redeliveries are acknowledged without double-counting.
+6. Only the first delivery updates the daily analytics bucket. Redeliveries
+   are acknowledged without double-counting.
 
-Click statistics are intentionally eventually consistent. The redirect path
-does not wait for RabbitMQ or analytics processing.
+The daily analytics series is intentionally eventually consistent and the
+redirect does not wait for RabbitMQ. The primary lifetime click counter is
+updated synchronously so it cannot remain stale when the worker is delayed.
 
 ## Solution structure
 

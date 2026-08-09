@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using UrlShortener.Api.Tests.Common;
+using UrlShortener.Application.Features.Analytics.GetUrlAnalytics;
 using UrlShortener.Application.Features.ShortUrls.Create;
 using UrlShortener.Application.Features.ShortUrls.GetByCode;
 using System.Text.Json;
@@ -53,12 +54,27 @@ public sealed class RedirectShortUrlTests
         await _client.GetAsync($"/{created!.ShortCode}");
         await _client.GetAsync($"/{created.ShortCode}");
 
-        await ProcessOutboxEventsAsync(created.ShortCode);
-
         var stats = await _client.GetFromJsonAsync<GetShortUrlByCodeResponse>(
             $"/api/shorturls/{created.ShortCode}");
 
         stats!.ClickCount.Should().Be(2);
+
+        await ProcessOutboxEventsAsync(created.ShortCode);
+
+        var statsAfterAnalytics =
+            await _client.GetFromJsonAsync<GetShortUrlByCodeResponse>(
+                $"/api/shorturls/{created.ShortCode}");
+        statsAfterAnalytics!.ClickCount.Should().Be(2);
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var analytics = await _client
+            .GetFromJsonAsync<GetUrlAnalyticsResponse>(
+                $"/api/shorturls/{created.ShortCode}/analytics" +
+                $"?from={today:yyyy-MM-dd}&to={today:yyyy-MM-dd}");
+
+        analytics!.TotalClicks.Should().Be(2);
+        analytics.Daily.Should().ContainSingle();
+        analytics.Daily.Single().ClickCount.Should().Be(2);
     }
 
     [Fact]

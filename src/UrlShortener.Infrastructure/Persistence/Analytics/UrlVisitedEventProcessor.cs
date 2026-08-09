@@ -54,14 +54,6 @@ public sealed class UrlVisitedEventProcessor : IUrlVisitedEventProcessor
             """,
             cancellationToken);
 
-        await _dbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"""
-            UPDATE short_urls
-            SET "ClickCount" = "ClickCount" + 1
-            WHERE "Id" = {integrationEvent.ShortUrlId}
-            """,
-            cancellationToken);
-
         await transaction.CommitAsync(cancellationToken);
         return true;
     }
