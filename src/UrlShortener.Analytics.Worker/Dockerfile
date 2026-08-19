@@ -7,6 +7,7 @@ RUN dotnet publish src/UrlShortener.Analytics.Worker/UrlShortener.Analytics.Work
     -c Release \
     -o /app/publish \
     --no-restore
+RUN test -f /app/publish/Microsoft.EntityFrameworkCore.Relational.dll
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app

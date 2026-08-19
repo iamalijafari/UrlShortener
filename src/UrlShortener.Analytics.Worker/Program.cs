@@ -57,6 +57,16 @@ builder.Services
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Force EF Core to build the relational model before the hosted workers
+    // start. A broken publish must fail the container at startup instead of
+    // leaving a live process that can never publish analytics events.
+    _ = dbContext.Model;
+}
+
 app.UseSerilogRequestLogging();
 
 app.MapHealthChecks("/health/live", new HealthCheckOptions
