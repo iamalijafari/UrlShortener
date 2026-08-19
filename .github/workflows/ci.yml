@@ -2,14 +2,10 @@ name: Continuous Integration
 
 on:
   push:
-    branches:
-      - main
-      - develop
 
   pull_request:
     branches:
       - main
-      - develop
 
   workflow_dispatch:
 
@@ -49,6 +45,12 @@ jobs:
             --no-build \
             --verbosity normal \
             --logger "trx;LogFileName=test-results.trx"
+
+      - name: Build API image
+        run: docker build --file src/UrlShortener.Api/Dockerfile --tag urlshortener-api:ci .
+
+      - name: Build analytics worker image
+        run: docker build --file src/UrlShortener.Analytics.Worker/Dockerfile --tag urlshortener-analytics-worker:ci .
 
       - name: Upload test results
         if: always()

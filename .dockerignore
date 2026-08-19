@@ -1,7 +1,10 @@
 **/bin
 **/obj
 .git
-.gitignore
-.vscode
+.github
 .idea
-README.md
+.vs
+.vscode
+TestResults
+*.user
+*.suo

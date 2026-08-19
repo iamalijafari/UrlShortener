@@ -57,6 +57,81 @@ namespace UrlShortener.Infrastructure.Persistence.Migrations
 
                     b.ToTable("short_urls", (string)null);
                 });
+
+            modelBuilder.Entity("UrlShortener.Infrastructure.Persistence.Models.DailyVisitStatistic", b =>
+                {
+                    b.Property<Guid>("ShortUrlId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<long>("ClickCount")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("LastVisitedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ShortUrlId", "Date");
+
+                    b.ToTable("daily_visit_statistics", (string)null);
+                });
+
+            modelBuilder.Entity("UrlShortener.Infrastructure.Persistence.Models.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("OccurredAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime?>("PublishedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PublishedAtUtc", "OccurredAtUtc");
+
+                    b.ToTable("outbox_messages", (string)null);
+                });
+
+            modelBuilder.Entity("UrlShortener.Infrastructure.Persistence.Models.ProcessedEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ProcessedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("processed_events", (string)null);
+                });
+
+            modelBuilder.Entity("UrlShortener.Infrastructure.Persistence.Models.DailyVisitStatistic", b =>
+                {
+                    b.HasOne("UrlShortener.Domain.Entities.ShortUrl", null)
+                        .WithMany()
+                        .HasForeignKey("ShortUrlId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 #pragma warning restore 612, 618
         }
     }

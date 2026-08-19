@@ -1,0 +1,73 @@
+name: Deploy Azure
+
+on:
+  workflow_dispatch:
+    inputs:
+      resource_group:
+        description: Existing Azure resource group
+        required: true
+        type: string
+      location:
+        description: Azure region
+        required: true
+        default: westeurope
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Sign in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: src/UrlShortener.Api/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/urlshortener-api:${{ github.sha }}
+
+      - name: Build and push analytics worker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: src/UrlShortener.Analytics.Worker/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/urlshortener-analytics-worker:${{ github.sha }}
+
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Container Apps
+        uses: azure/arm-deploy@v2
+        with:
+          resourceGroupName: ${{ inputs.resource_group }}
+          template: deploy/azure/main.bicep
+          parameters: >
+            location=${{ inputs.location }}
+            apiImage=ghcr.io/${{ github.repository_owner }}/urlshortener-api:${{ github.sha }}
+            workerImage=ghcr.io/${{ github.repository_owner }}/urlshortener-analytics-worker:${{ github.sha }}
+            postgresConnectionString=${{ secrets.POSTGRES_CONNECTION_STRING }}
+            redisConnectionString=${{ secrets.REDIS_CONNECTION_STRING }}
+            rabbitMqConnectionString=${{ secrets.RABBITMQ_CONNECTION_STRING }}
+            openTelemetryEndpoint=${{ secrets.OTEL_EXPORTER_ENDPOINT }}
+          failOnStdErr: false

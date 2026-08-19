@@ -40,18 +40,19 @@ public sealed class CreateShortUrlHandler
         } while (await _repository.ExistsByCodeAsync(shortCode, cancellationToken));
 
         var now = _dateTimeProvider.UtcNow;
+        var expiresAt = request.ExpiresAt ?? now.AddDays(5);
 
         var shortUrl = new ShortUrl(
             originalUrl,
             shortCode,
             now,
-            now.AddDays(5));
+            expiresAt);
 
         await _repository.AddAsync(shortUrl, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);
 
         return new CreateShortUrlResponse(
             shortCode.Value,
-            $"http://localhost:5000/{shortCode.Value}");
+            $"/{shortCode.Value}");
     }
 }
